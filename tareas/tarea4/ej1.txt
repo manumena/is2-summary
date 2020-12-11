@@ -1,0 +1,10 @@
+		  N0		  N1		  N2
+root  left right  left right  left right
+ N0   null  N1     N2  null   null null
+ 1     2     3     4    5      6    7
+ 
+ N0   N1   null   null null   null null
+ 1 	   2     3     4    5
+ 
+ N0   N1   null   null  N2    null null
+ 1 	   2     3     4    5      6    7

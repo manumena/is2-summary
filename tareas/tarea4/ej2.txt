@@ -1,0 +1,33 @@
+public boolean repOK(DLList dll) {
+  if (dll.first == null && dll.last == null && dll.size == 0) return true;
+  if (dll.first == null && dll.last != null) return false;
+  if (dll.first != null && dll.last == null) return false;
+  Set forwardVisited = new HashSet();
+  Set backwardVisited = new HashSet();
+  List workList = new LinkedList();
+
+  // check forwards
+  forwardVisited.add(dll.first);
+  workList.add(dll.first);
+  while (!workList.isEmpty()) {
+    Node current = workList.removeFirst();
+    if (current.next != null) {
+      if (!visited.add(current.next)) return false;
+      if (current.next.previous != current) return false;
+      workList.add(current.next);
+    } 
+  }
+
+  // checks backwards
+  backwardVisited.add(dll.last);
+  workList.add(dll.last);
+  while (!workList.isEmpty()) {
+    Node current = workList.removeFirst();
+    if (current.previous != null) {
+      if (!visited.add(current.previous)) return false;
+      if (current.previous.next != current) return false;
+      workList.add(current.previous);
+    } 
+  } 
+  return (backwardVisited.size() == forwardVisited.size() && forwardVisited.size() == dll.size);
+}

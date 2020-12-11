@@ -1,0 +1,23 @@
+3)
+La distancia de branch se computa del siguiente modo:
+
+d(a>b) = a>b ? 0 : (b-a)+K
+d(a<=b)=a<=b ? 0 : (a-b)
+
+Por lo que para L1-false, la distancia de branch es 0 lo cual tiene sentido
+porque para x = -15, la condición en L1 es falsa, mientras que para L1-true
+la distancia de branch es 0 - (-15) + 5 = 20
+
+4)
+Para este ejercicio debemos tener en cuenta que si un predicado se ejecuta
+una cantidad de veces, la distancia de branch será el mínimo de ellas.
+
+d(a==b) = abs(a-b)
+d(a!=b) = a!=b : 0 else K 
+
+Por lo tanto para L4-false, es decir para que L4 sea falso la distancia de
+branch es 0 ya que para el input x = 10, L3 le resta 1 por lo que queda en
+9 y ya se cumple que 9 != 0, en cambio para L4-true, el algoritmo iterará
+restando 1 en L3 hasta llegar a 0, por lo que las distancias de branch que
+se encuentran decrecen desde 9 hasta llegar a 0, y como tomamos la menor
+de ellas, decimos que la distancia de branch para L4-true con x=10 es 0.

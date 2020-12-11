@@ -1,0 +1,2 @@
+BinaryTree bt = new BinaryTree(null);
+lo agregará como una secuencia de invocaciones a metodos para futuras extensiones

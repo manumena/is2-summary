@@ -1,0 +1,18 @@
+Ejecución | x | Condición de ruta			| Explicación
+
+	1     | 1 | 5!=x0 && 7!=x0 && 9==x0		| 
+
+	2     | 9 | 5!=x0 && 7==x0             	| En la ejecución anterior se hace backtracking 
+		  |   |								| hasta el nodo de 9 == x0, tomando entonces el 
+		  |   |								| otro branch posible y seteando x0 == 9.
+
+	3     | 7 | 5==x0						| Al igual que en el anterior, como ya se tomaron 
+		  |   | 							| ambos branches de x == 9, se regresa hasta el
+		  |	  | 							| nodo de 7 != 0, tomando el otro branch y
+		  |	  |								| seteando a x en 7
+
+	4     | 5 |								| A esta altura, el unico camino no tomado era
+		  |   | 							| con x==5. No hay más posibilidades ya que en
+		  |   |								| ese caso, el programa termina con i = 0.
+
+Nota: el while no genera nodos ya que no depende de los valores de entrada.

@@ -1,0 +1,5 @@
+Node a = new Node(null,null);
+Node b = new Node(a,a);
+BinaryTree bt = new BinaryTree(b);
+
+la descartará como secuencia ilegal por incumplir precondiciones (no es un árbol)

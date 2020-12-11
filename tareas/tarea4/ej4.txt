@@ -1,0 +1,4 @@
+BinaryTree bt = new BinaryTree(null);
+bt.removeRoot();
+
+la descartará como una secuencia ilegal
