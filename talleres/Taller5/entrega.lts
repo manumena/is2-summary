@@ -1,0 +1,87 @@
+// Ejercicio 1
+ENCUENTRO = (hola -> conversar -> adios -> STOP).
+
+TRABAJO = (llego -> trabajo -> parto -> TRABAJO).
+
+MOVIMIENTO = (adelante -> (derecha -> MOVIMIENTO
+	     				  |izquierda -> STOP)).
+
+COIN = (toss->HEADS | toss->TAILS),
+HEADS = (heads->COIN),
+TAILS = (tails->COIN).
+
+CUATROTICKS (N=4) = (tick -> CUATROTICKS[N - 1]),
+CUATROTICKS[i:1..N] = (when(i > 1) tick -> CUATROTICKS[i - 1]
+					  |when(i == 1) tick -> STOP).
+
+const N = 3
+range R = 1..N
+DOBLE = (in[i:R] -> out[2*i] -> DOBLE).
+
+// Ejercicio 2
+range R2 = 0..2
+VARIABLE = VARIABLE[0],
+VARIABLE[i:R2] = ( read[i] -> VARIABLE[i] | write[j:R2] -> VARIABLE[j] ).
+
+
+// Ejercicio 3
+range R3 = 0..9
+SENSOR = SENSOR[5],
+SENSOR[n:R3] = (when(n<9) subir -> SENSOR[n+1]
+ 			  |when(n>0) bajar -> SENSOR[n-1]
+			  |when(n<2) low -> SENSOR[n]
+			  |when(n>1 && n<9) normal -> SENSOR[n]
+			  |when(n==9) high -> SENSOR[n]).
+
+
+// Ejercicio 4
+const M = 3
+range R4 = 0..M
+
+VARIABLE2 = VARIABLE2[0],
+VARIABLE2[i:R4] = (read[i] -> VARIABLE2[i] | write[j:R4] -> VARIABLE2[j]).
+
+ESCRITOR = (write[i:R4] -> ESCRITOR).
+
+LECTOR = (read[0] -> LECTOR | read[i:1..M] -> imprimir[i] -> LECTOR).
+
+// Comento la siguiente linea ya que cuando la descomento, solo compila Escritor y Lector
+//||LECTO_ESCRITOR_VARIABLE = (VARIABLE2 || (ESCRITOR || LECTOR )).
+
+
+// Ejercicio 5
+const N5 = 2
+range R5 = 0..N5
+ENTRADA = (entry -> ENTRADA).
+
+SALIDA = (exit -> SALIDA).
+
+DIRECTOR = (open -> close -> empty -> DIRECTOR).
+
+CONTROL = (wait -> CONTROL
+          |open -> ABIERTO[0]),
+ABIERTO[n:R5] = (when (n < N5) entry -> ABIERTO[n + 1]
+                |when (n > 0) exit -> ABIERTO[n - 1]
+				|close -> CERRADO[n]),
+CERRADO[n:R5] = (when (n > 0) exit -> CERRADO[n - 1]
+				|when (n == 0) empty -> CONTROL).
+
+//||MUSEO = (ENTRADA || SALIDA || DIRECTOR || CONTROL).
+
+//Ejercicio 6
+
+S_EQUIV = (a -> c -> B | c -> a -> B),
+B = (b -> S_EQUIV).
+
+// Este es el incorrecto
+S_EQUIV_MAL = (a -> c -> b -> S_EQUIV_MAL | c -> a -> b -> S_EQUIV_MAL).
+
+R = (a -> c -> R).
+//||RESTRINGIR = (S_EQUIV || R).
+
+R_MAL = (a -> b -> c -> R_MAL).
+
+T = (c -> T | c -> d -> T).
+//||EXTENDER = (T || S_EQUIV).
+
+

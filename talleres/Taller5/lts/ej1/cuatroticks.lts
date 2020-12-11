@@ -1,0 +1,3 @@
+CUATROTICKS (N=4) = (tick -> CUATROTICKS[N - 1]),
+CUATROTICKS[i:1..N] = (when(i > 1) tick -> CUATROTICKS[i - 1]
+					  |when(i == 1) tick -> STOP).

@@ -1,0 +1,93 @@
+public class Exercise1 extends java.lang.Object
+{
+/*Exercise1.java*/
+
+/*[Ljava.lang.String;@61c610d*/
+    public int exercise1(java.lang.String[])
+    {
+        Exercise1 this;
+        java.lang.String[] args;
+        int a, c, temp$0, temp$4, temp$5;
+
+        this := @this: Exercise1;
+/*Source Line Pos Tag: sline: 2 eline: 13 spos: 2 epos: 2 file: Exercise1.java*/
+
+        args := @parameter0: java.lang.String[];
+/*Source Line Pos Tag: sline: 2 eline: 2 spos: 23 epos: 35 file: Exercise1.java*/
+
+        a = 8;
+/*Source Line Pos Tag: sline: 3 eline: 3 spos: 3 epos: 12 file: Exercise1.java*/
+
+        temp$0 = lengthof args;
+/*Source Line Pos Tag: sline: 4 eline: 4 spos: 7 epos: 21 file: Exercise1.java*/
+/*args has reaching def: args := @parameter0: java.lang.String[]*/
+
+        if temp$0 > 2 goto label1;
+/*Source Line Pos Tag: sline: 4 eline: 4 spos: 7 epos: 21 file: Exercise1.java*/
+/*temp$0 has reaching def: temp$0 = lengthof args*/
+
+        goto label2;
+/*Source Line Pos Tag: sline: 4 eline: 4 spos: 7 epos: 21 file: Exercise1.java*/
+
+     label1:
+        a = 5;
+/*Source Line Pos Tag: sline: 5 eline: 5 spos: 4 epos: 4 file: Exercise1.java*/
+
+     label2:
+        c = 1;
+/*Source Line Pos Tag: sline: 7 eline: 7 spos: 3 epos: 3 file: Exercise1.java*/
+
+     label3:
+        if c > a goto label5;
+/*Source Line Pos Tag: sline: 8 eline: 8 spos: 12 epos: 16 file: Exercise1.java*/
+/*c has reaching def: c = 1*/
+/*c has reaching def: c = temp$4*/
+/*a has reaching def: a = 8*/
+/*a has reaching def: a = 5*/
+
+        goto label4;
+/*Source Line Pos Tag: sline: 8 eline: 8 spos: 12 epos: 16 file: Exercise1.java*/
+
+     label4:
+        temp$4 = c + 2;
+/*Source Line Pos Tag: sline: 9 eline: 9 spos: 4 epos: 13 file: Exercise1.java*/
+/*c has reaching def: c = 1*/
+/*c has reaching def: c = temp$4*/
+
+        c = temp$4;
+/*Source Line Pos Tag: sline: 9 eline: 9 spos: 4 epos: 4 file: Exercise1.java*/
+/*temp$4 has reaching def: temp$4 = c + 2*/
+
+        goto label3;
+/*Source Line Pos Tag: sline: 8 eline: 10 spos: 3 epos: 3 file: Exercise1.java*/
+
+     label5:
+        temp$5 = c - a;
+/*Source Line Pos Tag: sline: 11 eline: 11 spos: 3 epos: 12 file: Exercise1.java*/
+/*c has reaching def: c = 1*/
+/*c has reaching def: c = temp$4*/
+/*a has reaching def: a = 8*/
+/*a has reaching def: a = 5*/
+
+        return temp$5;
+/*Source Line Pos Tag: sline: 12 eline: 12 spos: 3 epos: 11 file: Exercise1.java*/
+/*temp$5 has reaching def: temp$5 = c - a*/
+    }
+
+/*[Ljava.lang.String;@67d6d15*/
+/*0*/
+    public void <init>()
+    {
+        Exercise1 this;
+
+        this := @this: Exercise1;
+/*1*/
+
+        specialinvoke this.<java.lang.Object: void <init>()>();
+/*1*/
+/*this has reaching def: this := @this: Exercise1*/
+
+        return;
+/*1*/
+    }
+}

@@ -1,0 +1,4 @@
+const N = 3
+range R = 1..N
+
+DOBLE = (in[i:R] -> out[2*i] -> DOBLE).

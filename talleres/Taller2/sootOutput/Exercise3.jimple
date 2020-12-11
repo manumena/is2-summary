@@ -1,0 +1,60 @@
+public class Exercise3 extends java.lang.Object
+{
+/*Exercise3.java*/
+
+/*[Ljava.lang.String;@65ae1a63*/
+    public int exercise3(int, int)
+    {
+        Exercise3 this;
+        int m, n, x, temp$1;
+
+        this := @this: Exercise3;
+/*Source Line Pos Tag: sline: 2 eline: 10 spos: 2 epos: 2 file: Exercise3.java*/
+
+        m := @parameter0: int;
+/*Source Line Pos Tag: sline: 2 eline: 2 spos: 23 epos: 27 file: Exercise3.java*/
+
+        n := @parameter1: int;
+/*Source Line Pos Tag: sline: 2 eline: 2 spos: 30 epos: 34 file: Exercise3.java*/
+
+        if m != 0 goto label1;
+/*Source Line Pos Tag: sline: 4 eline: 4 spos: 11 epos: 16 file: Exercise3.java*/
+
+        goto label2;
+/*Source Line Pos Tag: sline: 4 eline: 4 spos: 11 epos: 16 file: Exercise3.java*/
+
+     label1:
+        x = m;
+/*Source Line Pos Tag: sline: 5 eline: 5 spos: 10 epos: 10 file: Exercise3.java*/
+
+        goto label3;
+/*Source Line Pos Tag: sline: 4 eline: 7 spos: 7 epos: 15 file: Exercise3.java*/
+
+     label2:
+        x = 1;
+/*Source Line Pos Tag: sline: 7 eline: 7 spos: 10 epos: 10 file: Exercise3.java*/
+
+     label3:
+        temp$1 = n / x;
+/*Source Line Pos Tag: sline: 8 eline: 8 spos: 8 epos: 21 file: Exercise3.java*/
+/*Possible division by zero here*/
+
+        return temp$1;
+/*Source Line Pos Tag: sline: 9 eline: 9 spos: 8 epos: 16 file: Exercise3.java*/
+    }
+
+/*[Ljava.lang.String;@23a138e8*/
+    public void <init>()
+    {
+        Exercise3 this;
+
+        this := @this: Exercise3;
+/*1*/
+
+        specialinvoke this.<java.lang.Object: void <init>()>();
+/*1*/
+
+        return;
+/*1*/
+    }
+}

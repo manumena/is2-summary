@@ -1,0 +1,56 @@
+% ALGUNOS PAQUETES REQUERIDOS (EN UBUNTU): %
+% ========================================
+% %
+% texlive-latex-base %
+% texlive-latex-recommended %
+% texlive-fonts-recommended %
+% texlive-latex-extra %
+% texlive-lang-spanish (en ubuntu 13.10) %
+% ******************************************************** %
+
+\documentclass[a4paper]{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{fancyhdr}
+\usepackage[pdftex]{graphicx}
+\usepackage{sidecap}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{makeidx}
+\usepackage{float}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{amsfonts}
+\usepackage{sectsty}
+\usepackage{wrapfig}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{listingsutf8}
+\usepackage{enumitem}
+\usepackage{tabularx}
+
+% Para ver los marcos
+% \usepackage{showframe}
+\usepackage{caratula}
+
+\newcommand{\ord}{\ensuremath{\operatorname{O}}}
+\newcommand{\nat}{\ensuremath{\mathbb{N}}}
+\renewcommand{\thesubsubsection}{\thesubsection.\alph{subsubsection}}
+
+
+
+\input{layout}
+
+\begin{document}
+\materia{Ingeniería de Software II}
+\submateria{Segundo cuatrimestre de 2020}
+\titulo{Taller N\textsuperscript{o} 2}
+\subtitulo{Implementando Análisis de Dataflow}
+\integrante{Manuel Mena}{313/14}{manuelmena1993@gmail.com}
+\maketitle
+
+\newpage
+\input{ejercicios.tex}
+\end{document}

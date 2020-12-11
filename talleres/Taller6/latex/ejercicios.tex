@@ -1,0 +1,375 @@
+\section{}
+\subsection{}
+$[] <> enBase$ \\
+
+Es de liveness ya que no puedo encontrar un contraejemplo finito.
+
+\subsection{}
+$[](bateriaBaja \rightarrow (modoAhorro \cup enBase))$ \\
+
+Es de safety ya que puedo encontrar un contraejemplo finito donde tiene $bateriaBaja$ pero no entra en $modoAhorro$ hasta llegar a $enBase$.
+
+\subsection{}
+$[] \neg (girandoAIzquierda \land girandoADerecha)$ \\
+
+Es de safety ya que puedo encontrar un contraejemplo finito donde valga $girandoAIzquierda \land girandoADerecha$.
+
+\subsection{}
+
+$[] (detectaPared \rightarrow (girandoIzquierda \cup \neg detectaPared))$ \\
+
+% $[] (detectaPared \rightarrow X \ \ girandoIzquierda)$
+
+Es de safety ya que puedo encontrar un contraejemplo finito donde $detectaPared$ pero no vale $girandoIzquierda$ por mas que siga valiendo $detectaPared$.
+
+\section{}
+\subsection{}
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,
+                    semithick]
+
+  \node[state,initial] (init) {$p$};
+  \node[state,accepting] (q1) [right of=init] {$q$};
+
+  \path (init) edge node {$ $} (q1)
+        (q1) edge [loop above] node {$ $};
+
+\end{tikzpicture}
+
+La traza $p \rightarrow q$ no vale para la primer formula pero si para la segunda.
+
+\subsection{}
+\begin{tabular}{l l}
+$\sigma[i] \models [] \alpha$     & $\Longleftrightarrow \forall j \geq i (\sigma[j] \models \alpha)$ \\
+
+$\sigma[i] \models []p \land []q$ & $\Longleftrightarrow \forall j \geq i (\sigma[j] \models p) \land \forall j \geq i (\sigma[j] \models q)$ \\
+
+                                  & $\Longleftrightarrow \forall j \geq i (\sigma[j] \models p) \land (\sigma[j] \models q)$ \\
+
+                                  & $\Longleftrightarrow \forall j \geq i (\sigma[j] \models p \land q)$ \\
+
+                                  & $\Longleftrightarrow \sigma[i] \models [] (p \land q)$ \\
+\end{tabular}
+
+\subsection{}
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,
+                    semithick]
+
+  \node[state,initial] (init) {$p,q$};
+  \node[state,accepting] (q1) [right of=init] {$p$};
+  \node[state,accepting] (q2) [below of=q1] {$q$};
+
+  \path (init) edge node {$ $} (q1)
+        (init) edge node {$ $} (q2)
+        (q1) edge [loop above] node {$ $} (q1)
+        (q2) edge [loop below] node {$ $} (q2);
+
+\end{tikzpicture}
+
+La traza $p,q \longrightarrow p$ vale para la segunda formula pero no para la primera.
+
+\subsection{}
+\begin{tabular}{ll}
+$\sigma[i] \models \alpha U \beta$  & $\Longleftrightarrow \exists k \geq i ( \sigma[k] \models \beta \land \forall j, i \leq j < k (\sigma[k] \models \alpha) )$ \\
+
+$\sigma[i] \models (a \lor b) U b$  & $\Longleftrightarrow \exists k \geq i ( \sigma[k] \models b \land \forall j, i \leq j < k (\sigma[k] \models (a \lor b)) )$ \\
+
+                                    & $\Longleftrightarrow \exists k \geq i ( \sigma[k] \models b \land \forall j, i \leq j < k (\sigma[k] \models a \lor \sigma[k] \models b) )$ \\
+
+                                    & $\Longleftrightarrow \exists k \geq i ( \sigma[k] \models b \land \forall j, i \leq j < k (\sigma[k] \models a) \lor \forall j, i \leq j < k (\sigma[k] \models b))$ \\
+
+                                    & $\Longleftrightarrow \exists k \geq i ( \sigma[k] \models b \land \forall j, i \leq j < k (\sigma[k] \models a) )$ \\
+
+                                    & $\Longleftrightarrow \sigma[i] \models a U b$ \\
+\end{tabular}
+
+\subsection{}
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,
+                    semithick]
+
+  \node[state,initial] (init) {$a$};
+  \node[state] (q1) [right of=init] {$b$};
+  \node[state,accepting] (q2) [right of=q1] {$c$};
+
+  \path (init) edge [loop above] node {$ $}
+        (init) edge [bend left=15] node {$ $} (q1)
+        (q1) edge [bend left=15]   node {$ $} (init)
+        (q1) edge              node {$ $} (q2);
+
+\end{tikzpicture}
+
+La traza $a \longrightarrow b \longrightarrow a \longrightarrow b \longrightarrow c$ vale para la primer formula pero no para la segunda, ya que en el cuarto estado se satisface $b U c$ pero no se satisface $a$ para todos los estados anteriores. 
+
+\section{}
+\subsection{}
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,
+                    semithick]
+
+  \node[state,initial] (init) {$1$};
+  \node[state,accepting] (q1) [right of=init] {$2$};
+
+  \path (init) edge [loop above] node {$b,c$} (init)
+        (init) edge [bend left=15] node {$a$} (q1)
+        (q1) edge [bend left=15]   node {$b,c$} (init)
+        (q1) edge [loop above] node {$a$} (q1);
+
+\end{tikzpicture}
+
+\subsection{}
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,
+                    semithick]
+
+  \node[state,initial] (init) {$1$};
+  \node[state] (q1) [right of=init] {$2$};
+  \node[state,accepting] (q2) [below of=q1] {$3$};
+
+  \path (init) edge [loop above] node {$b,c$} (init)
+        (init) edge [bend left=15] node {$a$} (q1)
+        (q1) edge [bend left=15]   node {$c$} (init)
+        (q1) edge [loop above] node {$a$} (q1)
+        (q2) edge [bend left=15] node {$a$} (q1)
+        (q2) edge [bend left=15] node {$c$} (init)
+        (q1) edge [bend left=15] node {$b$} (q2);
+
+\end{tikzpicture}
+
+\subsection{}
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,
+                    semithick]
+
+  \node[state,initial] (init) {$1$};
+  \node[state] (q1) [right of=init] {$2$};
+  \node[state,accepting] (q2) [right of=q1] {$3$};
+
+  \path (init) edge [loop above] node {$b,c$} (init)
+        (init) edge [bend left=15] node {$a$} (q1)
+        (q1) edge [bend left=15]   node {$c$} (init)
+        (q1) edge [loop above] node {$a$} (q1)
+        (q1) edge [bend left=15] node {$b$} (q2)
+        (q2) edge [loop above] node {$a,b,c$} (q1);
+
+\end{tikzpicture}
+
+\section{}
+\subsection{}
+$<>([]p \lor []q)$ \\
+
+Una vez que llega $p$ o $q$, vale $p$ o $q$ siempre, respectivamente. Debido al loop de init sobre si mismo, se agrega $<>$ indicando que esto va a suceder cuando se cambie de estado. 
+
+\subsection{}
+$[] ( \neg (\neg p || q) -> <>q)$ \\
+
+En todos los estados ocurre que si llega algo distinto de $\neg p$ o $q$, caemos en el estado 1 en donde se puede ciclar sobre si mismo, como ocurria con init del ejercicio anterior, pero para aceptar la cadena en algun momento debe valer $q$.
+
+\subsection{}
+$<>c || [] (\neg p || q)$ \\
+
+Puede que llegue $c$ o que se entre en el estado 1 y se cicle alguna cantidad de veces pero que en algun momento llegue $c$, o bien, que valga $(\neg p || q)$ y a partir de ese estado valga por siempre.
+
+\section{}
+\subsection{}
+\subsubsection{}
+Paso 1: Niego la propiedad y genero su automata de Büchi \\
+
+$\neg ([](a \lor b \lor c)) = <>(\neg a \land \neg b \land \neg c)$ \\
+
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,
+                    semithick]
+
+  \node[state,initial] (init) {$1$};
+  \node[state,accepting] (q1) [right of=init] {$2$};
+
+  \path (init) edge [loop below] node {$\{a\},\{b\},\{c\},\{a,b\},\{a,c\},\{b,c\},\{a,b,c\}$} (init)
+        (init) edge node {$\emptyset$} (q1)
+        (q1) edge [loop above] node {$\emptyset,\{a\},\{b\},\{c\},\{a,b\},\{a,c\},\{b,c\},\{a,b,c\}$} (q1);
+
+\end{tikzpicture}
+
+Paso 2: Convertir el LTS a un automata de Büchi \\
+
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,
+                    semithick]
+
+  \node[state,initial,accepting] (q1) {$1$};
+  \node[state,accepting] (q2) [below of=q1] {$2$};
+  \node[state,accepting] (q3) [right of=q1] {$3$};
+  \node[state,accepting] (q4) [right of=q3] {$4$};
+  \node[state,accepting] (q5) [below of=q4] {$5$};
+
+  \path (q1) edge node {$a$} (q2)
+        (q1) edge node {$a$} (q3)
+        (q2) edge [bend left=15] node {$b$} (q3)
+        (q3) edge [bend left=15] node {$b$} (q2)
+        (q3) edge [bend left=15] node {$c$} (q4)
+        (q3) edge [bend left=15] node {$a$} (q5)
+        (q4) edge [bend left=15] node {$c$} (q3)
+        (q5) edge [bend left=15] node {$c$} (q3);
+
+\end{tikzpicture}
+
+Paso 3: Hacemos el producto entre los autómatas \\
+
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,
+                    semithick]
+
+  \node[state,initial] (q1) {$1$};
+  \node[state] (q2) [below of=q1] {$2$};
+  \node[state] (q3) [right of=q1] {$3$};
+  \node[state] (q4) [right of=q3] {$4$};
+  \node[state] (q5) [below of=q4] {$5$};
+
+  \path (q1) edge node {$a$} (q2)
+        (q1) edge node {$a$} (q3)
+        (q2) edge [bend left=15] node {$b$} (q3)
+        (q3) edge [bend left=15] node {$b$} (q2)
+        (q3) edge [bend left=15] node {$c$} (q4)
+        (q3) edge [bend left=15] node {$a$} (q5)
+        (q4) edge [bend left=15] node {$c$} (q3)
+        (q5) edge [bend left=15] node {$c$} (q3);
+
+\end{tikzpicture}
+
+Paso 4: Si el lenguaje de aceptación del producto de los autómatas es vacío, se cumple la propiedad \\
+
+En este caso lo es ya que no tiene ningún estado que acepte. \\
+
+\subsubsection{}
+La formula vale porque dice que siempre vale alguno $a$, $b$ o $c$ lo cual es cierto porque todos los estados transicionan mediante alguno de esos simbolos, y todos los estados aceptan. LTSA nos lo indica con este output: \\
+
+Formula !PROP1 = (true U (!c & (!b & !a))) \\
+Analysing... \\
+Depth 3 -- States: 5 Transitions: 8 Memory used: 14098K \\
+No deadlocks/errors \\
+Analysed in: 0ms \\
+
+\subsection{}
+Paso 1: Niego la propiedad y genero su automata de Büchi \\
+
+$[] <> \neg c$ \\
+
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=5.8cm,
+                    semithick]
+
+  \node[state,initial] (init) {$1$};
+  \node[state,accepting] (q1) [right of=init] {$2$};
+
+  \path (init) edge [loop below] node {$\{c\},\{a,c\},\{b,c\},\{a,b,c\}$} (init)
+        (init) edge [bend left=15] node {$\emptyset,\{a\},\{b\},\{a,b\}$} (q1)
+        (q1) edge [loop above] node {$\emptyset,\{a\},\{b\},\{a,b\}$} (q1)
+        (q1) edge [bend left=15] node {$\{c\},\{a,c\},\{b,c\},\{a,b,c\}$} (init);
+
+\end{tikzpicture}
+
+Paso 2: Convertir el LTS a un automata de Büchi \\
+
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,
+                    semithick]
+
+  \node[state,initial,accepting] (q1) {$1$};
+  \node[state,accepting] (q2) [below of=q1] {$2$};
+  \node[state,accepting] (q3) [right of=q1] {$3$};
+  \node[state,accepting] (q4) [right of=q3] {$4$};
+  \node[state,accepting] (q5) [below of=q4] {$5$};
+
+  \path (q1) edge node {$a$} (q2)
+        (q1) edge node {$a$} (q3)
+        (q2) edge [bend left=15] node {$b$} (q3)
+        (q3) edge [bend left=15] node {$b$} (q2)
+        (q3) edge [bend left=15] node {$c$} (q4)
+        (q3) edge [bend left=15] node {$a$} (q5)
+        (q4) edge [bend left=15] node {$c$} (q3)
+        (q5) edge [bend left=15] node {$c$} (q3);
+
+\end{tikzpicture}
+
+Paso 3: Hacemos el producto entre los autómatas \\
+
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,
+                    semithick]
+
+  \node[state,initial] (q11) {$1,1$};
+  \node[state,accepting] (q22) [below of=q11] {$2,2$};
+  \node[state,accepting] (q32) [right of=q11] {$3,2$};
+  \node[state,accepting] (q52) [right of=q32] {$5,2$};
+  \node[state] (q41) [below of=q32] {$4,1$};
+  \node[state] (q31) [below of=q52] {$3,1$};
+
+  \path (q11) edge node {$a$} (q22)
+        (q11) edge node {$a$} (q32)
+        (q22) edge [bend left=15] node {$b$} (q32)
+        (q32) edge [bend left=15] node {$b$} (q22)
+        (q32) edge node {$c$} (q41)
+        (q32) edge node {$a$} (q52)
+        (q41) edge node {$c$} (q31)
+        (q52) edge [bend left=15] node {$c$} (q31)
+        (q31) edge [bend left=30] node {$b$} (q22)
+        (q31) edge [bend left=15] node {$c$} (q41)
+        (q31) edge [bend left=15] node {$a$} (q52)
+        ;
+
+\end{tikzpicture}
+
+Paso 4: Si el lenguaje de aceptación del producto de los autómatas es vacío, se cumple la propiedad \\
+
+En este caso, no es vacío. Podemos observar en el producto de los autómatas que existen cadenas de aceptación. Por lo tanto, no se cumple la propiedad \\
+
+\subsubsection{}
+No vale porque no se puede llegar en ningun momento a que siempre valga $c$. LTSA nos lo dice con este output:
+
+Formula !PROP2 = (false R (true U !c)) \\
+LTL Property Check... \\
+-- States: 8 Transitions: 34 Memory used: 15243K \\
+Finding trace to cycle... \\
+Depth 2 -- States: 3 Transitions: 11 Memory used: 15689K \\
+Finding trace in cycle... \\
+Depth 1 -- States: 1 Transitions: 1 Memory used: 16089K \\
+Violation of LTL property: @PROP2 \\
+Trace to terminal set of states: \\
+  a
+  a
+Cycle in terminal set: \\
+  c
+  a
+LTL Property Check in: 2ms \\
+
+\subsection{}
+La propiedad no vale ya que hay transiciones donde no se cumple $a$. El output de LTSA es: \\
+
+Formula !PROP3 = (true U !a) \\
+Analysing... \\
+Depth 2 -- States: 2 Transitions: 3 Memory used: 14157K \\
+Trace to property violation in PROP3: \\
+  a \\
+  b \\
+Analysed in: 1ms \\
+
+\subsection{}
+La propiedad vale ya que para cuando en los dos estados desde donde se puede ir desde el inicial, se pasa a traves de $a$, y a partir de esos estados ya vale $(b \lor c)$. El output de LTSA: \\
+
+Formula !PROP4 = (!a R (!c & !b)) \\
+LTL Property Check... \\
+-- States: 8 Transitions: 28 Memory used: 15442K \\
+No LTL Property violations detected. \\
+LTL Property Check in: 0ms \\
+
+\subsection{}
+No vale porque todos los ciclos pasan por el estado del medio que puede transicionar en con todos los simbolos, por lo tanto no es cierto que siempre valga alguno de ellos. \\
+
+Formula !PROP5 = (((true U !c) & (true U !b)) & (true U !a)) \\
+Analysing... \\
+Depth 2 -- States: 2 Transitions: 3 Memory used: 15254K \\
+Trace to property violation in PROP5: \\
+  a \\
+  b \\
+Analysed in: 0ms \\
+
+\subsection{}
+No vale ya que se puede ciclar entre los estados del medio y abajo a la izquierda. Este es el output de LTSA: \\
+
+Formula !PROP6 = X (!c & X !c) \\
+Analysing... \\
+Depth 3 -- States: 4 Transitions: 7 Memory used: 15069K \\
+Trace to property violation in PROP6: \\
+  a \\
+  b \\
+  a \\
+Analysed in: 0ms \\

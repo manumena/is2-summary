@@ -1,0 +1,87 @@
+\section*{Introducción}
+En este trabajo se implementa un dataflow analysis para detectar si hay una posible división por cero en programas escritos en java. El análisis soporta las siguientes operaciones:
+
+\begin{itemize}
+\item x = constante; 
+\item x = y;
+\item x=y+z;
+\item x=y-z;
+\item x=y*z;
+\item x=y/z;
+\end{itemize}
+
+Para modelar los valores abstractos de las variables, se utilizan cuatro categorías. $ZERO$, para valores que son cero, $NOT\_ZERO$, para valores distintos de cero, $BOTTOM$ para valores indefinidos y $MAYBE\_ZERO$ para valores que pueden ser iguales o distintos de cero.
+
+El análisis es may y sound, lo que implica que avisa que puede haber divisiones por cero pero sin total seguridad, y que para cualquier posible división por cero en el programa se avisa que en ese caso puede haber una división por cero, pero con la posibilidad de afirmar que hay posibles divisiones por cero en casos en que no las haya. Es, además, un análisis estático y forward, lo que quiere decir que se evaluá el código del programa estáticamente desde el principio hasta el final, actualizando los valores posibles de cada variable según las líneas de código soportadas en el flujo del programa.
+
+La aritmética que se utilizó fue la siguiente:
+
+\subsection*{Suma}
+\begin{itemize}
+\item Si cualquiera de los dos es $BOTTOM$, el resultado es $BOTTOM$ \\
+\item Si ninguno es $BOTTOM$ y alguno de los dos es $MAYBE\_ZERO$, entonces el resultado es $MAYBE\_ZERO$, ya que con que uno sea $MAYBE\_ZERO$, por mas que el otro sea $ZERO$ o $NOT\_ZERO$, no es posible determinar si su suma es $ZERO$ o $NOT\_ZERO$ \\
+\item Si alguno de los dos operandos es ZERO, entonces el resultado es igual al otro operando, ya que el cero en la suma es el elemento neutro \\
+\item Si nada de lo anterior ocurre solo queda el caso donde ambos operandos sean $NOT\_ZERO$, y como no podemos determinar si la suma es cero o no, el resultado es $MAYBE\_ZERO$
+\end{itemize}
+
+\subsection*{División}
+\begin{itemize}
+\item Si alguno es $BOTTOM$ o el divisor es $ZERO$ o $MAYBE\_ZERO$, devuelve $BOTTOM$ ya que representa una posible división por cero \\
+\item En cualquier otro caso retorna el mismo valor abstracto que el dividendo
+\end{itemize}
+
+\subsection*{Multiplicación}
+\begin{itemize}
+\item Si algún factor es $ZERO$, retorna $ZERO$ incluso cuando el otro operando es $BOTTOM$ \\
+\item Si ninguno es $ZERO$, y alguno es $BOTTOM$, retorna $BOTTOM$ \\
+\item Si ninguno es $BOTTOM$ ni $ZERO$ pero alguno es $MAYBE\_ZERO$, retorna $MAYBE\_ZERO$ ya que no se puede determinar si la multiplicación es cero o no \\
+\item Si nada de lo anterior se cumple, ambos operandos son $NOT\_ZERO$ por lo que el resultado es $NOT\_ZERO$
+\end{itemize}
+
+\subsection*{Resta}
+Se comporta igual que la suma ya que sería como sumar pero multiplicando por (-1) al segundo operando.
+
+\subsection*{Merge}
+\begin{itemize}
+\item Si ambos branches tienen el mismo valor abstracto, se retorna ese valor
+\item Si alguno de los dos es $BOTTOM$ devuelve el valor del otro branch. Esto es porque si una branch llego hasta esa instancia siendo $BOTTOM$ sin haber terminado su ejecución, es porque no dividió por cero. Por lo tanto, $BOTTOM$ actúa como elemento neutro en el merge
+\item Caso contrario se devuelve $MAYBE\_ZERO$ ya que no puede determinarse si el valor es cero o no
+\end{itemize}
+\section*{Como correrlo}
+En el directorio \textit{examples} se encuentran los 4 ejericios. Se debe correr mediante el comando
+
+\textit{java -jar zero-analysis/target/zero-analysis-1.0-SNAPSHOT-jar-with-dependencies.jar -cp .:./examples/:\$JRE -f J Exercise1 -v -print-tags -p jtp.DivisionByZeroAnalysis on}
+
+reemplazando \textit{Exercise1} por la clase que se desee.
+
+\section*{Ejercicio 1}
+\setcounter{section}{1}
+
+Observamos el output del programa y vemos que en la línea \#25 alerta de una posible división por cero, lo cual es esperado y correcto ya que no conocemos el valor de $n$ pero si el de $x$, que al ser 0 hace que la multiplicación también lo sea y de esta forma dividiendo a $m$ por 0.
+
+Es importante aclarar que si bien la salida del programa dice que es una posible division por cero, dentro del mismo se sabe que es efectivamente por cero, ya que $x$ es categorizada como $ZERO$.
+
+\section*{Ejercicio 2}
+\setcounter{section}{2}
+
+Viendo el output notamos que en la línea \#25 detecta la división por cero que ocurre en la línea \#3 del ejercicio, lo cual es correcto ya que al restarse $n$ a sí mismo, $x$ queda con valor cero.
+
+Por eso al dividir $m$ por cero, se detecta la posible división.
+
+Sin embargo, debemos notar que para el algoritmo $x$ no vale $ZERO$, sino que lo cataloga como $MAYBE\_ZERO$, ya que $n$ esta categorizado también como $MAYBE\_ZERO$ por ser un parámetro del cual no se tiene información. Por lo tanto, al hacer la resta de dos valores que posiblemente sean cero, el resultado posiblemente sea cero, pero el programa no lo sabe con certeza.
+
+Esto podría ocasionar falsos positivos, por ejemplo en este ejercicio si antes de dividirse $m / x$ se le sumara 1 a $x$, el valor de $x$ sería 1, pero como el programa no sabe cual era el valor de $x$ con certeza, no le queda otra que catalogarlo como $MAYBE\_ZERO$, alertándonos entonces de una posible division por cero cuando sabemos que no la hay.
+
+\section*{Ejercicio 3}
+\setcounter{section}{3}
+
+Observamos en el output la alerta de división por cero en la línea \#40, refiriéndose a la línea \#7 del ejercicio. En este caso, nos encontramos con un falso positivo, pero es un caso distinto al que se describió anteriormente.
+
+Lo que sucede es que a $x$ se lo categoriza correctamente como $ZERO$ en la primer línea. Luego, si $m$ es distinto de cero, se le asigna $m$, sino, se le asigna 1. El problema es que por mas que analizando los valores de las variables (en este caso de $m$) sepamos que $x$ no puede valer 0, el algoritmo no es capaz de darse cuenta de que en la línea \#3 del ejercicio, $m$ es distinto de cero. Por ser un valor pasado como parámetro, se lo cataloga como $MAYBE\_ZERO$, resultando en que al mergear los dos caminos posibles el algoritmo se encuentre con $MAYBE\_ZERO$ por un lado y $NOT\_ZERO$ por el otro, resultando en $MAYBE\_ZERO$ debido a que se trata de un \textit{may} análisis.
+
+\section*{Ejercicio 4}
+\setcounter{section}{4}
+
+En este último caso encontramos la alerta en el en la línea \#22 del output, refiriéndose a la \#2 del ejercicio. 
+
+Lo que ocurre es que $m$ y $n$ son catalogadas como $MAYBE\_ZERO$ ambas ya que nada se conoce de ellas por ser pasadas por parámetro, por lo que $n$ podría ser cero y por eso nos alerta de ello.

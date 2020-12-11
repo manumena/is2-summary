@@ -1,0 +1,42 @@
+public class Exercise4 extends java.lang.Object
+{
+/*Exercise4.java*/
+
+/*[Ljava.lang.String;@588e041d*/
+    public int exercise4(int, int)
+    {
+        Exercise4 this;
+        int m, n, temp$0;
+
+        this := @this: Exercise4;
+/*Source Line Pos Tag: sline: 2 eline: 6 spos: 2 epos: 2 file: Exercise4.java*/
+
+        m := @parameter0: int;
+/*Source Line Pos Tag: sline: 2 eline: 2 spos: 23 epos: 27 file: Exercise4.java*/
+
+        n := @parameter1: int;
+/*Source Line Pos Tag: sline: 2 eline: 2 spos: 30 epos: 34 file: Exercise4.java*/
+
+        temp$0 = m / n;
+/*Source Line Pos Tag: sline: 4 eline: 4 spos: 7 epos: 20 file: Exercise4.java*/
+/*Possible division by zero here*/
+
+        return temp$0;
+/*Source Line Pos Tag: sline: 5 eline: 5 spos: 7 epos: 15 file: Exercise4.java*/
+    }
+
+/*[Ljava.lang.String;@175cb935*/
+    public void <init>()
+    {
+        Exercise4 this;
+
+        this := @this: Exercise4;
+/*1*/
+
+        specialinvoke this.<java.lang.Object: void <init>()>();
+/*1*/
+
+        return;
+/*1*/
+    }
+}

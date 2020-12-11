@@ -1,0 +1,7 @@
+range R = 0..9
+SENSOR = SENSOR[5],
+SENSOR[n:R] = (when(n<9) subir -> SENSOR[n+1]
+ 			  |when(n>0) bajar -> SENSOR[n-1]
+			  |when(n<2) low -> SENSOR[n]
+			  |when(n>1 && n<9) normal -> SENSOR[n]
+			  |when(n==9) high -> SENSOR[n]).

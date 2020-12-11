@@ -1,0 +1,2 @@
+MOVIMIENTO = (adelante -> (derecha -> MOVIMIENTO
+	     				  |izquierda -> STOP)).

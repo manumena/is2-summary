@@ -1,0 +1,26 @@
+\section{}
+Produjo 304 test cases. No se produjeron failing test cases.
+
+\section{}
+Jacoco reporta 53 lineas cubiertas, 7 sin cobertura. En el caso de los branches estan cubiertos 25, 1 sin cobertura.
+
+\section{}
+El numero de failing tests fue de 130 mientras que el de tests de regresión fue de 1141.
+
+\section{}
+El código de StackAr tiene un bug en el metodo pop. Este no settea en null la posicion de elems que representa el elemento popeado, solo decrementa el indice. Esto provoca que no se pueda cumplir con la tercer condicion de repOK luego de popear, la cual dice que todos los elementos posteriores a donde se encuentra posicionado el índice.
+
+\section{}
+\subsection{}
+PiTest construye 54 mutantes. El mutation score es $\frac{34}{54}$.
+
+\subsection{}
+El mejor mutation score conseguido fue $\frac{49}{54}$.
+
+Los mutantes equivalentes fueron aquellos que no se han podido matar:
+
+\begin{itemize}
+\item Aquellos que cambian el return false por return true, en repOK. No hay forma, mediante los métodos de la clase, de llegar a que la StackAr quede en un estado invalido (osea que alguna de esas condiciones se cumpla), por lo que puede considerarse que el comportamiento de estos mutantes es equivalente al original. Distinto es para los que mutan la condición, puesto que esos si retornaran falso cuando deberían ser verdadero. \\
+
+\item Aquel que muta el hashcode reemplazando prime * result por prime / result, ya que prime y result valen 31 y 1 respectivamente para cualquier ejecución, por lo que prime * result = prime / result siempre. \\
+\end{itemize}

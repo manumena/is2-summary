@@ -1,0 +1,215 @@
+\section*{Ejercicio 1}
+\setcounter{section}{1}
+
+Se corrió SOOT en MacOS para el programa de el ejercicio 1 mediante el
+siguiente comando 
+\\
+
+java -cp .:soot-3.3.0-jar-with-dependencies.jar:. soot.Main -cp .:\$JRE -f J Exercise1 -print-tags -p jap.rdtagger enabled:true -p jb use-original-names:true -p jb.cp off -keep-line-number
+\\
+
+Además se analizaron las Reaching Definitions mediante el algoritmo de Chaotic
+Iteration con el objetivo de complementar y explicar el análisis hecho por SOOT:
+\\
+
+\begin{tabular}{| c | c | c |}
+\hline
+$\#$		& $In$								&$Out$ \\
+\hline
+$0$			& $-$								&$\{<a,?>, <c,?>\}$ \\
+\hline
+$1$			& $\{<a,?>, <c,?>\}$				&$\{<a,1>, <c,1>\}$ \\
+\hline
+$2$			& $\{<a,1>, <c,1>\}$				&$\{<a,1>, <c,1>\}$ \\
+\hline
+$3$			& $\{<a,1>, <c,1>\}$				&$\{<a,3>, <c,1>\}$ \\
+\hline
+$5$			& $\{<a,1>, <c,1>, <a,3>\}$			&$\{<a,1>, <c,5>, <a,3>\}$ \\
+\hline
+$6$			& $\{<a,1>, <c,1>, <a,3>, <c,7>\}$	&$\{<a,1>, <c,5>, <a,3>, <c,7>\}$ \\
+\hline
+$7$			& $\{<a,1>, <c,5>, <a,3>, <c,7>\}$	&$\{<a,1>, <c,7>, <a,3>\}$ \\
+\hline
+$9$			& $\{<a,1>, <c,5>, <a,3>, <c,7>\}$	&$\{<c,5>, <c,7>, <a,9>\}$ \\
+\hline
+$10$		& $\{<c,5>, <c,7>, <a,9>\}$			&$\{<c,5>, <c,7>, <a,9>\}$ \\
+\hline
+\end{tabular}
+
+\subsection{}
+El output del comando de SOOT no nos muestra ninguna definición de variables
+alcanzada por la línea $\#5$. Esto es así porque SOOT omite las definiciones que
+no pueden usarse para calcular esa definición, en este caso la asignación de la
+constante $1$. 
+
+Por esto se requiere un análisis propio. Como podemos observar en la tabla las
+definiciones alcanzadas hasta la linea $\#5$ (viendo el IN) son las de a\#1, c\#1
+y a\#3, $a = 8$, $c = 3$ y $a = 5$, respectivamente. Esto se debe a que este
+dataflow analysis tiene en cuenta todos los caminos posibles
+(incluyendo los que podrian nunca ser alncanzados) por lo cual se dice que en
+este análisis se sacrifica completeness para ganar soundness.
+
+\subsection{}
+El output de SOOT para la línea $\#9$ muestra lo siguiente:
+\\
+
+/*c\#3 has reaching def: c\#3 = 1*/ \\
+
+/*c\#3 has reaching def: c\#3 = c\#3 + 2*/ \\
+
+/*a has reaching def: a = 8*/ \\
+
+/*a has reaching def: a = 5*/ \\
+\\
+
+lo cual se condice con el análisis expresado en la tabla. La variables $c$
+alcanza las definiciones de las líneas 5 y 7, y la $a$ las de las líneas 1 y 3.
+No se alcanza la definicion de $c$ de la línea $\#1$ ya que es parte del
+conjunto KILL de la línea $\#5$.
+
+\subsection{}
+El output de SOOT para la línea $\#10$ muestra:
+\\
+
+/*a\#8 has reaching def: a\#8 = c\#3 - a*/ \\
+
+Como vemos, coincide con el resultado de la tabla: la definicion de $a$ 
+alcanzada es la de la línea $\#9$, ya que en ella se sobreescriben las
+definiciones de $a$ de las líneas anteriores. Como en el primer inciso, SOOT no
+escribe sobre las definiciones que no se utilizan dentro de la línea, en este
+caso las de $c$. Si miramos la tabla observamos que la línea $\#10$ también es
+alcanzada por las definiciones de $c$ de las líneas 5 y 7.
+
+\section*{Ejercicio 2}
+\setcounter{section}{2}
+Se corrió SOOT en MacOS para el programa de el ejercicio 2 mediante el
+siguiente comando (igual que en el ejercicio anterior pero para el archivo del
+ejercicio 2, y ademas analizando Live Variables en lugar de Reaching Definitions)
+\\
+
+java -cp .:soot-3.3.0-jar-with-dependencies.jar:. soot.Main -cp .:\$JRE -f J Exercise2 -print-tags -p jap.lvtagger enabled:true -p jb use-original-names:true -p jb.cp off -keep-line-number
+\\
+
+Una vez más, se analizaron las Live Variables mediante el algoritmo de Chaotic
+Iteration con el objetivo de complementar y explicar el análisis hecho por SOOT:
+\\
+
+\begin{tabular}{| c | c | c |}
+\hline
+$\#$		& $In$				&$Out$ \\
+\hline
+$0$			& $-$				&$\{a, b\}$ \\
+\hline
+$1$			& $\{a, b\}$		&$\{a, b, c\}$ \\
+\hline
+$2$			& $\{a, b, c\}$		&$\{a, b, c, d\}$ \\
+\hline
+$3$			& $\{a, b, c, d\}$	&$\{a, b, c, d\}$ \\
+\hline
+$4$			& $\{a, b, c, d\}$	&$\{c, d\}$ \\
+\hline
+$5$			& $\{c\}$			&$\{r\}$ \\
+\hline
+$7$			& $\{d\}$			&$\{r\}$ \\
+\hline
+$9$			& $\{r\}$			&$-$ \\
+\hline
+\end{tabular}
+\\
+
+El análisis de Live Variables es backward, a diferencia del del punto anterior
+que es forward. Esto significa que se comienza a analisar desde el último nodo
+hacia el primero. 
+
+En este caso nos interesará observar el conjunto $OUT$ de cada línea para
+determinar qué variables estan vivas.
+
+\subsection{}
+El output de SOOT para la línea $\#5$ muestra:
+\\
+
+/*Live Variable: r*/
+\\
+
+Esto coincide con el resultado que obtuvimos en la tabla mediante chaotic
+iteration. Significa que en algun camino siguiente se utilizará (en la línea 
+$\#9)$ esta variable antes de ser redefinida.
+
+\subsection{}
+El output de SOOT para la línea $\#7$ es el mismo que para la $\#5$:
+
+/*Live Variable: r*/
+\\
+
+ya que en ambos casos $r$ es la única variable por ser utlizada
+
+\subsection{}
+SOOT no muestra resultados para la línea $\#9$ y es debido a que luego de esta
+línea el programa finalizará por lo que no pueden haber variables vivas, es
+decir, que fueran a ser utilizadas antes de redefinirse.
+
+\section*{Ejercicio 3}
+El null pointer checker analiza si en algún punto del programa un puntero apunta a \textit{NULL}.
+
+Se corrió el análisis de SOOT y se obtuvo el siguiente output:
+
+\begin{verbatim}
+public class C extends java.lang.Object
+{
+/*C.java*/
+/*[inner=C$Cell, outer=C, name=Cell,flags=10]*/
+/*soot.tagkit.InnerClassAttribute@4653c98c*/
+
+/*0*/
+ public void <init>()
+ {
+     C this;
+
+     this := @this: C;
+
+     specialinvoke this.<java.lang.Object: void <init>()>();
+/*1*/
+/*[not null]*/
+
+     return;
+/*1*/
+ }
+
+/*7*/
+ public int exercise3(C$Cell, C$Cell)
+ {
+     C this;
+     C$Cell c1, c2;
+     int $stack3;
+
+     this := @this: C;
+
+     c1 := @parameter0: C$Cell;
+
+     c2 := @parameter1: C$Cell;
+
+     c1.<C$Cell: int value> = 1;
+/*8*/
+/*[unknown]*/
+
+     c2.<C$Cell: int value> = 2;
+/*9*/
+/*[unknown]*/
+
+     $stack3 = c1.<C$Cell: int value>;
+/*10*/
+/*[not null]*/
+
+     return $stack3;
+/*10*/
+ }
+}
+\end{verbatim}
+
+En la línea 3 ninguna de las variables puede estar apuntando a \textit{NULL}. Esto es porque al pasarse como parámetros \textit{c1} y \textit{c2} se sabe que tienen un campo denominado \textit{value}, porque ambos pertenecen a la clase \textit{Cell}, que tiene siempre el campo \textit{value}.
+
+Con lo cual, \textit{c1} y \textit{c2} son punteros a una estuctura que tiene un campo \textit{value} que puede almacenar un entero.
+
+Antes de ejecutar la línea 3, se escriben tanto el valor de \textit{c1.value} como el de \textit{c2.value}, con los valores enteros 1 y 2, respectivamente.
+
+Por lo tanto, al llegar a la línea 3 ninguno de los punteros en el programa puede estar apuntando a un valor nulo.

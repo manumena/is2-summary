@@ -1,0 +1,294 @@
+\section*{Introducción}
+En este taller nos enfocaremos en la técnica de Dynamic Symbolic Execution, la cual tiene como objetivo testar el código mezclando las técnicas de Symbolic Execution con Random Testing, con el fin de obtener lo mejor de ambas técnicas y cubrir todos los caminos posibles.
+ 
+Del lado de Symbolic Execution, toma la idea de ejecutar con valores simbólicos para poder vincularlos con las condiciones para tratar de tomar ambos caminos. En cada condicional, se almacena el camino tomado y se agrega a un conjunto de condiciones de ruta, para luego resolver con un \textit{Theorem Prover} los condicionales necesarios para tomar otra ruta y así recorrer mayor parte del código.
+Del lado de random testing, toma valores elegidos de manera aleatoria para iniciar la ejecución y va guardando valores concretos para poder tomar las distintas rutas del programa. Usando esto y un \textit{Theorem Prover} incompleto, es que esta técnica logra llegar a rutas que usando las otras técnicas, debido a sus debilidades, son más difíciles explorar.
+
+\section{}
+\subsection{}
+\begin{verbatim}
+(declare-const x Bool)
+(declare-const y Bool)
+(assert (= (not (or x y)) (and (not x) (not y))))
+(check-sat)
+\end{verbatim}
+
+\subsection{}
+\begin{verbatim}
+(declare-const x Bool)
+(declare-const y Bool)
+(assert (=  (and x y) (not (or (not x) (not y)))))
+(check-sat)
+\end{verbatim}
+
+\subsection{}
+\begin{verbatim}
+(declare-const x Bool)
+(declare-const y Bool)
+(assert (=  (not (and x y)) (not (and (not x) (not y)))))
+(check-sat)
+\end{verbatim}
+
+Si añadimos el comando $(get-model)$ obtenemos valores posibles para satisfacer las formulas. En los dos primeros casos la respuesta está vacia ya que al tratarse de tautologías, se satisfacirán las formulas para cualquier valor de $x$ e $y$. Pero para el tercer punto, Z3 nos indica que deben ser $x = false$, $y = true$.
+
+\section{}
+\subsection{}
+\begin{verbatim}
+(declare-const x Int)
+(declare-const y Int)
+(assert (= (+ (* 3 x) (* 2 y)) 36))
+(check-sat)
+(get-model)
+\end{verbatim}
+
+La formula se satisface con $x = 12$, $y = 0$.
+
+\subsection{}
+\begin{verbatim}
+(declare-const x Int)
+(declare-const y Int)
+(assert (= (+ (* 5 x) (* 4 y)) 64))
+(check-sat)
+(get-model)
+\end{verbatim}
+
+La formula se satisface con $x = 12$, $y = 1$.
+
+\subsection{}
+\begin{verbatim}
+(declare-const x Int)
+(declare-const y Int)
+(assert (= (* x y) 64))
+(check-sat)
+(get-model)
+\end{verbatim}
+
+La formula se satisface con $x = 64$, $y = 1$.
+
+\section{}
+\begin{verbatim}
+(declare-const a1 Real)
+(declare-const a2 Real) 
+(declare-const a3 Real)
+(assert (= a1 (mod 16 2)))
+(assert (= a2 (/ 16 4)))
+(assert (= a3 (rem 16 5)))
+(check-sat)
+(get-model)
+\end{verbatim}
+
+La salida de Z3 es $a_1 = 4.0$, $a_2 = 0.0$, $a_3 = 1.0$.
+
+\newpage
+\section{}
+\subsection{}
+\begin{center}
+\begin{tikzpicture}[node distance=2cm]
+\node (start) [startstop] {Start};
+\node (dec1) [decision, below of=start, yshift=-1cm] {$a \leq 0 \lor b \leq 0 \lor c \leq 0$};
+\node (ret1) [io, below right = 1cm and 1cm of dec1] {return 4};
+\node (dec2) [decision, below left = 1cm and 1cm of dec1] {$! (a + b > c \land a + c > b \land b + c > a)$};
+\node (ret2) [io, below right = 1cm and 1cm of dec2] {return 4};
+\node (dec3) [decision, below left = 1cm and 1cm of dec2] {$a == b \land b + c$};
+\node (ret3) [io, below right = 1cm and 1cm of dec3] {return 1};
+\node (dec4) [decision, below left = 1cm and 1cm of dec3] {$a == b \lor b == c \lor a == c$};
+\node (ret4) [io, below right = 1cm and 1cm of dec4] {return 2};
+\node (ret5) [io, below left = 1cm and 1cm of dec4] {return 3};
+
+\draw [arrow] (start) -- (dec1);
+\draw [arrow] (dec1) -- node[anchor=south west] {true} (ret1);
+\draw [arrow] (dec1) -- node[anchor=south east] {false} (dec2);
+\draw [arrow] (dec2) -- node[anchor=south west] {true} (ret2);
+\draw [arrow] (dec2) -- node[anchor=south east] {false} (dec3);
+\draw [arrow] (dec3) -- node[anchor=south west] {true} (ret3);
+\draw [arrow] (dec3) -- node[anchor=south east] {false} (dec4);
+\draw [arrow] (dec4) -- node[anchor=south west] {true} (ret4);
+\draw [arrow] (dec4) -- node[anchor=south east] {false} (ret5);
+\end{tikzpicture}
+\end{center}
+
+\subsection{}
+El line coverage es de 100\%, no el branch coverage, que es de 91\%. Hay dos branches que no pudieron ser alcanzadas. \\
+
+El compilador de java traduce las cadenas de $\&\&$ en ifs anidados y las cadenas de $\|\|$ en ifs consecutivos. Es importante tener esto en cuenta para entender por qué esas branches pueden no haber sido alcanzadas. \\
+
+Las líneas donde jacoco reporta que faltó una rama en cada una fueron las de las ultimas dos condiciones de triangle. En $a == b \&\& b == c$ reporta que falto una rama de entre 4. Como el compilador transforma esta condición en 
+
+\newpage
+\begin{verbatim}
+if (a == b) {
+	if (b == c) {
+        return 1;
+	}
+}
+\end{verbatim}
+
+Jacoco muestra que llegó al return, por lo que el caso donde $a == b == c$ está cubierto, pero es muy probable que al haber puesto poco tiempo de ejecución, randoop no haya podido cubrir el caso cuando $a != b$ o $b != c$, dado que los valores son aleatorios, y teniendo en cuenta que por mas que en la mayor parte los casos es de esperarse que si pueda generar a, b y c distintos, para llegar a ese punto en la ejecución debe haber pasado las dos primeras condiciones antes, lo cual reduce enormemente la probabilidad de encontrar los valores para ese caso.
+
+Para la cuarta condición jacoco indica que falta una branch de entre 6. El compilador transforma $(a==b \|\| b==c \|\| a==c)$ en 
+
+\begin{verbatim}
+if (a==b) {
+	return 2;
+}
+if (b==c) {
+	return 2;
+}
+if (a==c) {
+	return 2;
+}
+\end{verbatim}
+
+por lo que al igual con la condición anterior, la probabilidad de que randoop no haya podido generar alguno de los casos, por ejemplo que $a != c$, ya habiendo evadido las condiciones anteriores, es muy alta.
+
+\subsection{}
+% Please add the following required packages to your document preamble:
+% \usepackage{lscape}
+\begin{landscape}
+\begin{table}[]
+\caption{Tabla ejercicio 4c}
+\label{Tabla ejercicio 4c}
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+Iteracion &
+  Input concreto &
+  Condicion de ruta &
+  Escpecificacion para Z3 &
+  Resultado Z3 \\ \hline
+1 &
+  a = 0, b = 0, c = 0 &
+  a \textless{}= 0 $\lor$ b \textless{}= 0 $\lor$ c \textless{}= 0 &
+  (assert (not (or (or (\textless{}= a 0) (\textless{}= b 0)) (\textless{}= c 0)))) &
+  a = 1, b = 1, c =1 \\ \hline
+2 &
+  a = 1, b = 1, c =1 &
+  \begin{tabular}[c]{@{}l@{}}!(a \textless{}= 0 $\lor$ b \textless{}= 0 $\lor$ c \textless{}= 0)\\ \&\&\\ (a+b\textgreater{}c\&\&a+c\textgreater{}b$\land$b+c \textgreater a)\\ $\land$\\ (a == b $\land$ b == c $\land$ a == c)\end{tabular} &
+  \begin{tabular}[c]{@{}l@{}}(assert (not (or (or (\textless{}= a 0) (\textless{}= b 0)) (\textless{}= c 0))))\\ (assert (and (\textgreater (+ a b) c) (and (\textgreater (+ a c) b) (\textgreater (+ b c) a))))\\ (assert (not (and (= a b) (= b c))))\end{tabular} &
+  a = 2, b = 3, c = 4 \\ \hline
+3 &
+  a = 2, b = 3, c = 4 &
+  \begin{tabular}[c]{@{}l@{}}!(a \textless{}= 0 $\lor$ b \textless{}= 0 $\lor$ c \textless{}= 0)\\ $\land$\\ (a+b\textgreater{}c$\land$a+c\textgreater{}b$\land$b+c \textgreater a)\\ $\land$\\ !(a == b $\land$ b == c $\land$ a == c)\\ $\land$\\ !(a == b $\lor$ b == c $\lor$ a == c)\end{tabular} &
+  \begin{tabular}[c]{@{}l@{}}(assert (not (or (or (\textless{}= a 0) (\textless{}= b 0)) (\textless{}= c 0))))\\ (assert (and (\textgreater (+ a b) c) (and (\textgreater (+ a c) b) (\textgreater (+ b c) a))))\\ (assert (not (and (= a b) (= b c))))\\ (assert (or (or (= a b) (= b c)) (= a c)))\end{tabular} &
+  a = 2, b = 1, c = 2 \\ \hline
+4 &
+  a = 2, b = 1, c = 2 &
+  \begin{tabular}[c]{@{}l@{}}!(a \textless{}= 0 $\lor$ b \textless{}= 0 $\lor$ c \textless{}= 0)\\ $\land$\\ (a+b\textgreater{}c$\land$a+c\textgreater{}b$\land$b+c \textgreater a)\\ $\land$\\ !(a == b $\land$ b == c $\land$ a == c)\\ $\land$\\ (a == b $\lor$ b == c $\lor$ a == c)\end{tabular} &
+  \begin{tabular}[c]{@{}l@{}}(assert (not (or (or (\textless{}= a 0) (\textless{}= b 0)) (\textless{}= c 0))))\\ (assert (not (and (\textgreater (+ a b) c) (and (\textgreater (+ a c) b) (\textgreater (+ b c) a)))))\end{tabular} &
+  a = 1, b = 1, c = 2 \\ \hline
+5 &
+  a = 1, b = 1, c = 2 &
+  \begin{tabular}[c]{@{}l@{}}!(a \textless{}= 0 $\lor$ b \textless{}= 0 $\lor$ c \textless{}= 0)\\ $\land$\\ !(a+b\textgreater{}c$\land$a+c\textgreater{}b$\land$b+c \textgreater a)\end{tabular} &
+  END &
+  END \\ \hline
+\end{tabular}
+\end{table}
+\end{landscape}
+
+\subsection{}
+Jacoco indica una covertura del 100\% de las líneas, pero una caída a 68\% de las branches cubiertas. Lo que sucede es que si bien con DSE se cubren todos los paths posibles, hay muchos branches distintos que son parte de paths equivalentes. Esto es debido a la forma de separar las condiciones en ifs distintos del compilador de java.
+
+\newpage
+\begin{landscape}
+\section{}
+\subsection{}
+\begin{center}
+\begin{tikzpicture}[node distance=2cm]
+\node (start) [startstop] {Start};
+\node (dec1) [decision, below of=start, yshift=-1cm] {$array[i] + k == 0$};
+\node (dec2) [decision, below left = 1cm and 4cm of dec1] {$array[i] + k == 0$};
+\node (dec3) [decision, below right = 1cm and 4cm of dec1] {$array[i] + k == 0$};
+\node (dec4) [decision, below left = 1cm and 1cm of dec2] {$array[i] + k == 0$};
+\node (dec5) [decision, below right = 1cm and 1cm of dec2] {$array[i] + k == 0$};
+\node (dec6) [decision, below left = 1cm and 1cm of dec3] {$array[i] + k == 0$};
+\node (dec7) [decision, below right = 1cm and 1cm of dec3] {$array[i] + k == 0$};
+\node (ret1) [io, below left = 1cm and 0.5cm of dec4] {return c};
+\node (ret2) [io, below right = 1cm and 0.5cm of dec4] {return c};
+\node (ret3) [io, below left = 1cm and 0.5cm of dec5] {return c};
+\node (ret4) [io, below right = 1cm and 0.5cm of dec5] {return c};
+\node (ret5) [io, below left = 1cm and 0.5cm of dec6] {return c};
+\node (ret6) [io, below right = 1cm and 0.5cm of dec6] {return c};
+\node (ret7) [io, below left = 1cm and 0.5cm of dec7] {return c};
+\node (ret8) [io, below right = 1cm and 0.5cm of dec7] {return c};
+
+\draw [arrow] (start) -- (dec1);
+\draw [arrow] (dec1) -- node[anchor=south east] {false} (dec2);
+\draw [arrow] (dec1) -- node[anchor=south west] {true} (dec3);
+\draw [arrow] (dec2) -- node[anchor=south east] {false} (dec4);
+\draw [arrow] (dec2) -- node[anchor=south west] {true} (dec5);
+\draw [arrow] (dec3) -- node[anchor=south east] {false} (dec6);
+\draw [arrow] (dec3) -- node[anchor=south west] {true} (dec7);
+\draw [arrow] (dec4) -- node[anchor=south east] {false} (ret1);
+\draw [arrow] (dec4) -- node[anchor=south west] {true} (ret2);
+\draw [arrow] (dec5) -- node[anchor=south east] {false} (ret3);
+\draw [arrow] (dec5) -- node[anchor=south west] {true} (ret4);
+\draw [arrow] (dec6) -- node[anchor=south east] {false} (ret5);
+\draw [arrow] (dec6) -- node[anchor=south west] {true} (ret6);
+\draw [arrow] (dec7) -- node[anchor=south east] {false} (ret7);
+\draw [arrow] (dec7) -- node[anchor=south west] {true} (ret8);
+
+
+\end{tikzpicture}
+\end{center}
+\end{landscape}
+
+\subsection{}
+La cobertura es de 100\% tanto de lineas como de branches. A diferencia del ejercicio anterior, en este es muy probable poder cubrir todas las lineas ya que solamente se requiere cumplir la condición una vez. Como hay una única condición, cubrir todas las branches se reduce a poder entrar o no en ella.
+
+Lo que no va a poder cubrirse son todos los paths, ya que solo puede cumplirse la condición una unica vez debido a que ni $k$ ni $array$ cambian. Hay muchos paths que no van a poder recorrerse.
+
+\subsection{}
+\begin{table}[h]
+\caption{Tabla de ejercicio 5.c}
+\label{5c}
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+Iteración &
+  Input concreto &
+  Condición de ruta &
+  Especificación de ruta &
+  Resultado Z3 \\ \hline
+1 &
+  k = 0.0 &
+  \begin{tabular}[c]{@{}l@{}}5 + k != 0\\ \&\&\\ 1 + k != 0\\ \&\&\\ 3 + k != 0\end{tabular} &
+  \begin{tabular}[c]{@{}l@{}}(assert (not (= (+ 5 k) 0)))\\ (assert (not (= (+ 1 k) 0)))\\ (assert (= (+ 3 k) 0))\end{tabular} &
+  k = -3.0 \\ \hline
+2 &
+  k = -3.0 &
+  \begin{tabular}[c]{@{}l@{}}5 + k != 0\\ \&\&\\ 1 + k != 0\\ \&\&\\ 3 + k == 0\end{tabular} &
+  \begin{tabular}[c]{@{}l@{}}(assert (not (= (+ 5 k) 0)))\\ (assert (= (+ 1 k) 0))\\ (assert (not (= (+ 3 k) 0)))\end{tabular} &
+  k = -1.0 \\ \hline
+3 &
+  k = -1.0 &
+  \begin{tabular}[c]{@{}l@{}}5 + k != 0\\ \&\&\\ 1 + k == 0\\ \&\&\\ 3 + k != 0\end{tabular} &
+  \begin{tabular}[c]{@{}l@{}}(assert (not (= (+ 5 k) 0)))\\ (assert (= (+ 1 k) 0))\\ (assert (= (+ 3 k) 0))\end{tabular} &
+  UNSAT \\ \hline
+4 &
+   &
+   &
+  \begin{tabular}[c]{@{}l@{}}(assert (= (+ 5 k) 0))\\ (assert (not (= (+ 1 k) 0)))\\ (assert (not (= (+ 3 k) 0)))\end{tabular} &
+  k = -5.0 \\ \hline
+5 &
+  k = -5.0 &
+  \begin{tabular}[c]{@{}l@{}}5 + k == 0\\ \&\&\\ 1 + k != 0\\ \&\&\\ 3 + k != 0\end{tabular} &
+  \begin{tabular}[c]{@{}l@{}}(assert (= (+ 5 k) 0))\\ (assert (not (= (+ 1 k) 0)))\\ (assert (= (+ 3 k) 0))\end{tabular} &
+  UNSAT \\ \hline
+6 &
+   &
+   &
+  \begin{tabular}[c]{@{}l@{}}(assert (= (+ 5 k) 0))\\ (assert (= (+ 1 k) 0))\\ (assert (not (= (+ 3 k) 0)))\end{tabular} &
+  UNSAT \\ \hline
+7 &
+   &
+   &
+  \begin{tabular}[c]{@{}l@{}}(assert (= (+ 5 k) 0))\\ (assert (= (+ 1 k) 0))\\ (assert (not (= (+ 3 k) 0)))\end{tabular} &
+  UNSAT \\ \hline
+8 &
+   &
+   &
+  END &
+  END \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{}
+Jacoco indica una cobertura de 100\% al igual que con los tests de randoop. Por como está escrito el código, con uno alcanzar dos de los paths posibles se puede garantizar la cobertura total de la función.

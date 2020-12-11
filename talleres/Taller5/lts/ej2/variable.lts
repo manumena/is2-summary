@@ -1,0 +1,6 @@
+const N = 2
+range R = 0..N
+VARIABLE = (write[n:R] -> VARIABLE[n]
+		   | read[0] -> VARIABLE[0]),
+VARIABLE[n:R] = (write[m:R] -> VARIABLE[m]
+				|read[n] -> VARIABLE[n]).
